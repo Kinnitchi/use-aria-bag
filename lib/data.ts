@@ -70,8 +70,7 @@ export const models = [
     id: "outono",
     name: "Outono",
     description: "Elegância Atemporal",
-    fullDescription:
-      "A coleção Outono traz peças que combinam elegância e conforto, perfeitas para a temporada.",
+    fullDescription: "A coleção Outono traz peças que combinam elegância e conforto, perfeitas para a temporada.",
     image: "/images/hero-1.jpg",
     count: 7,
   },
@@ -117,6 +116,21 @@ export const products = {
     { id: 1, name: "Hobo Slouchy", price: 1590, color: "Verde Oliva" },
     { id: 2, name: "Hobo Crescent", price: 1790, color: "Preto" },
     { id: 3, name: "Hobo Soft", price: 1490, color: "Nude" },
+  ],
+  modern: [
+    { id: 1, name: "Modern Geometric", price: 1990, color: "Preto" },
+    { id: 2, name: "Modern Minimalist", price: 1790, color: "Branco" },
+    { id: 3, name: "Modern Sculptural", price: 2190, color: "Cinza" },
+  ],
+  outono: [
+    { id: 1, name: "Outono Trench", price: 2990, color: "Bege" },
+    { id: 2, name: "Outono Cashmere", price: 3490, color: "Caramelo" },
+    { id: 3, name: "Outono Leather", price: 3990, color: "Marrom" },
+  ],
+  classica: [
+    { id: 1, name: "Clássica Heritage", price: 2490, color: "Vinho" },
+    { id: 2, name: "Clássica Doctor", price: 2290, color: "Preto" },
+    { id: 3, name: "Clássica Cambridge", price: 2690, color: "Marrom" },
   ],
 };
 
