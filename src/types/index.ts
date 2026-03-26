@@ -10,7 +10,7 @@ export interface Model {
 }
 
 export interface Product {
-  id: number;
+  id: string;
   name: string;
   price: number;
   color: string;
@@ -29,7 +29,7 @@ export interface Slide {
 
 export interface CartItem {
   cartId: string;
-  productId: number;
+  productId: string;
   modelId: string;
   name: string;
   price: number;

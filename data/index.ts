@@ -1,4 +1,4 @@
-import type { Model, Product, Slide } from "@/src/types";
+import type { Model, Slide } from "@/src/types";
 
 export const models: Model[] = [
   {
@@ -86,7 +86,7 @@ export const models: Model[] = [
   },
 ];
 
-export const products: Record<string, Product[]> = {
+export const products: Record<string, Array<{ id: number; name: string; price: number; color: string }>> = {
   tote: [
     { id: 1, name: "Tote Caramelo Classic", price: 1890, color: "Caramelo" },
     { id: 2, name: "Tote Noir Essential", price: 2150, color: "Preto" },

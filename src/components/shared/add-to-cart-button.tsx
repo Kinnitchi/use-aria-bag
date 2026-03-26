@@ -6,21 +6,14 @@ import { toast } from "sonner";
 
 interface AddToCartButtonProps {
   modelId: string;
-  productId: number;
+  productId: string;
   productName: string;
   price: number;
   color: string;
   image: string;
 }
 
-export function AddToCartButton({
-  modelId,
-  productId,
-  productName,
-  price,
-  color,
-  image,
-}: AddToCartButtonProps) {
+export function AddToCartButton({ modelId, productId, productName, price, color, image }: AddToCartButtonProps) {
   const { addItem } = useCart();
 
   function handleAddToCart() {
@@ -31,7 +24,7 @@ export function AddToCartButton({
   return (
     <Button
       onClick={handleAddToCart}
-      className="cursor-pointer text-background hover:bg-accent/90 rounded-sm px-8 py-6 text-sm tracking-wider uppercase"
+      className="text-background hover:bg-accent/90 cursor-pointer rounded-sm px-8 py-6 text-sm tracking-wider uppercase"
     >
       Adicionar a sacola
     </Button>

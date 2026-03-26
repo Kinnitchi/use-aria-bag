@@ -5,10 +5,13 @@ import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { cn } from "@/src/lib/utils";
+import type { Slide } from "@/src/types";
 
-import { slides } from "@/src/data";
+interface HeroCarouselProps {
+  slides: Slide[];
+}
 
-export function HeroCarousel() {
+export function HeroCarousel({ slides }: HeroCarouselProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
@@ -28,7 +31,7 @@ export function HeroCarousel() {
 
   return (
     <section
-      className="relative h-[85vh] md:h-screen overflow-hidden"
+      className="relative h-[85vh] overflow-hidden md:h-screen"
       onMouseEnter={() => setIsAutoPlaying(false)}
       onMouseLeave={() => setIsAutoPlaying(true)}
     >
@@ -38,38 +41,28 @@ export function HeroCarousel() {
           key={slide.index}
           className={cn(
             "absolute inset-0 transition-opacity duration-1000",
-            index === currentSlide ? "opacity-100" : "opacity-0",
+            index === currentSlide ? "opacity-100" : "opacity-0"
           )}
         >
-          <Image
-            src={slide.image}
-            alt={slide.title}
-            fill
-            className="object-cover"
-            priority={index === 0}
-          />
+          <Image src={slide.image} alt={slide.title} fill className="object-cover" priority={index === 0} />
           {/* Overlay */}
-          <div className="absolute inset-0 bg-foreground/10" />
+          <div className="bg-foreground/10 absolute inset-0" />
 
           {/* Content */}
           <div className="absolute inset-0 flex items-center justify-center">
             <div
               className={cn(
-                "text-center px-4 transition-all duration-700 delay-300",
-                index === currentSlide
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-8",
+                "px-4 text-center transition-all delay-300 duration-700",
+                index === currentSlide ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
               )}
             >
-              <p className="text-background/90 text-sm md:text-base tracking-[0.3em] uppercase mb-4">
+              <p className="text-background/90 mb-4 text-sm tracking-[0.3em] uppercase md:text-base">
                 {slide.subtitle}
               </p>
-              <h2 className="font-serif text-4xl md:text-6xl lg:text-7xl text-background font-medium mb-6 text-balance">
+              <h2 className="text-background mb-6 font-serif text-4xl font-medium text-balance md:text-6xl lg:text-7xl">
                 {slide.title}
               </h2>
-              <p className="text-background/80 text-base md:text-lg mb-8 max-w-md mx-auto">
-                {slide.description}
-              </p>
+              <p className="text-background/80 mx-auto mb-8 max-w-md text-base md:text-lg">{slide.description}</p>
               <Button
                 size="lg"
                 asChild
@@ -87,7 +80,7 @@ export function HeroCarousel() {
         variant="ghost"
         size="icon"
         onClick={prevSlide}
-        className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 text-background hover:bg-background/20 h-12 w-12 rounded-full"
+        className="text-background hover:bg-background/20 absolute top-1/2 left-4 h-12 w-12 -translate-y-1/2 rounded-full md:left-8"
       >
         <ChevronLeft className="h-6 w-6" />
         <span className="sr-only">Slide anterior</span>
@@ -96,14 +89,14 @@ export function HeroCarousel() {
         variant="ghost"
         size="icon"
         onClick={nextSlide}
-        className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 text-background hover:bg-background/20 h-12 w-12 rounded-full"
+        className="text-background hover:bg-background/20 absolute top-1/2 right-4 h-12 w-12 -translate-y-1/2 rounded-full md:right-8"
       >
         <ChevronRight className="h-6 w-6" />
         <span className="sr-only">Próximo slide</span>
       </Button>
 
       {/* Dots */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-3">
+      <div className="absolute bottom-8 left-1/2 flex -translate-x-1/2 items-center gap-3">
         {slides.map((_, index) => (
           <button
             key={index}
@@ -111,8 +104,8 @@ export function HeroCarousel() {
             className={cn(
               "transition-all duration-300",
               index === currentSlide
-                ? "w-8 h-1 bg-background"
-                : "w-2 h-2 bg-background/50 rounded-full hover:bg-background/80",
+                ? "bg-background h-1 w-8"
+                : "bg-background/50 hover:bg-background/80 h-2 w-2 rounded-full"
             )}
           >
             <span className="sr-only">Ir para slide {index + 1}</span>

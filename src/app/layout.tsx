@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { Toaster } from "sonner";
 import { CartProvider } from "@/src/contexts/cart-context";
 import { CatalogProvider } from "@/src/contexts/catalog-context";
+import { getModels, getProducts } from "@/src/db/queries";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -39,17 +40,17 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [initialModels, initialProducts] = await Promise.all([getModels(), getProducts()]);
+
   return (
     <html lang="pt-BR">
-      <body
-        className={`${inter.variable} ${cormorant.variable} font-sans antialiased`}
-      >
-        <CatalogProvider>
+      <body className={`${inter.variable} ${cormorant.variable} font-sans antialiased`}>
+        <CatalogProvider initialModels={initialModels} initialProducts={initialProducts}>
           <CartProvider>
             {children}
             <Toaster position="bottom-right" richColors />
