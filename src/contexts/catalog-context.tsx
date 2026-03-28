@@ -8,7 +8,7 @@ interface CatalogContextType {
   products: Record<string, Product[]>;
   updateModel: (modelId: string, updates: Partial<Omit<Model, "id">>) => void;
   updateProduct: (modelId: string, productId: string, updates: Partial<Omit<Product, "id">>) => void;
-  addProduct: (modelId: string, product: Omit<Product, "id">) => void;
+  addProduct: (modelId: string, product: Product) => void;
   deleteProduct: (modelId: string, productId: string) => void;
 }
 
@@ -37,11 +37,10 @@ export function CatalogProvider({
     }));
   }
 
-  function addProduct(modelId: string, product: Omit<Product, "id">) {
+  function addProduct(modelId: string, product: Product) {
     setProducts((prev) => {
       const existing = prev[modelId] ?? [];
-      const newId = crypto.randomUUID();
-      return { ...prev, [modelId]: [...existing, { ...product, id: newId }] };
+      return { ...prev, [modelId]: [...existing, product] };
     });
   }
 

@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useAction } from "next-safe-action/hooks";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/src/components/ui/dialog";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
 import { Textarea } from "@/src/components/ui/textarea";
 import { useCatalog } from "@/src/contexts/catalog-context";
+import { updateModelAction } from "@/src/actions/catalog/actions";
 import type { Model } from "@/src/types";
 import { toast } from "sonner";
 
@@ -25,6 +27,24 @@ export function EditModelDialog({ model, open, onClose }: EditModelDialogProps) 
   const [image, setImage] = useState("");
   const [count, setCount] = useState("");
 
+  const { execute, isPending } = useAction(updateModelAction, {
+    onSuccess: () => {
+      if (!model) return;
+      updateModel(model.id, {
+        name: name.trim(),
+        description: description.trim(),
+        fullDescription: fullDescription.trim(),
+        image: image.trim(),
+        count: parseInt(count, 10),
+      });
+      toast.success(`Modelo "${name.trim()}" atualizado com sucesso.`);
+      onClose();
+    },
+    onError: ({ error }) => {
+      toast.error(error.serverError ?? "Erro ao atualizar modelo. Tente novamente.");
+    },
+  });
+
   useEffect(() => {
     if (model) {
       setName(model.name);
@@ -37,24 +57,21 @@ export function EditModelDialog({ model, open, onClose }: EditModelDialogProps) 
 
   function handleSave() {
     if (!model) return;
-    const parsedCount = parseInt(count, 10);
     if (!name.trim()) {
       toast.error("O nome do modelo é obrigatório.");
       return;
     }
-    if (isNaN(parsedCount) || parsedCount < 0) {
-      toast.error("Quantidade deve ser um número válido.");
+    if (!image.trim()) {
+      toast.error("O caminho da imagem é obrigatório.");
       return;
     }
-    updateModel(model.id, {
+    execute({
+      modelSlug: model.id,
       name: name.trim(),
       description: description.trim(),
       fullDescription: fullDescription.trim(),
       image: image.trim(),
-      count: parsedCount,
     });
-    toast.success(`Modelo "${name}" atualizado com sucesso.`);
-    onClose();
   }
 
   return (
@@ -119,10 +136,12 @@ export function EditModelDialog({ model, open, onClose }: EditModelDialogProps) 
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
+          <Button variant="outline" onClick={onClose} disabled={isPending}>
             Cancelar
           </Button>
-          <Button onClick={handleSave}>Salvar alterações</Button>
+          <Button onClick={handleSave} disabled={isPending}>
+            {isPending ? "Salvando..." : "Salvar alterações"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

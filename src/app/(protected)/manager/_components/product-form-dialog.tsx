@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useAction } from "next-safe-action/hooks";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/src/components/ui/dialog";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
 import { useCatalog } from "@/src/contexts/catalog-context";
+import { addProductAction, updateProductAction, deleteProductAction } from "@/src/actions/catalog/actions";
 import type { Product } from "@/src/types";
 import { toast } from "sonner";
 import { Trash2 } from "lucide-react";
@@ -27,6 +29,40 @@ export function ProductFormDialog({ modelId, modelName, product, open, onClose }
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [color, setColor] = useState("");
+
+  const { execute: executeSave, isPending: isSaving } = useAction(isEditing ? updateProductAction : addProductAction, {
+    onSuccess: ({ data }) => {
+      const parsedPrice = parseFloat(price.replace(",", "."));
+      if (isEditing && product) {
+        updateProduct(modelId, product.id, {
+          name: name.trim(),
+          price: parsedPrice,
+          color: color.trim(),
+        });
+        toast.success(`Produto "${name.trim()}" atualizado.`);
+      } else {
+        const newId = (data as { productId: string } | undefined)?.productId ?? crypto.randomUUID();
+        addProduct(modelId, { id: newId, name: name.trim(), price: parsedPrice, color: color.trim() });
+        toast.success(`Produto "${name.trim()}" cadastrado em ${modelName}.`);
+      }
+      onClose();
+    },
+    onError: ({ error }) => {
+      toast.error(error.serverError ?? "Erro ao salvar produto. Tente novamente.");
+    },
+  });
+
+  const { execute: executeDelete, isPending: isDeleting } = useAction(deleteProductAction, {
+    onSuccess: () => {
+      if (!product) return;
+      deleteProduct(modelId, product.id);
+      toast.success(`Produto "${product.name}" removido.`);
+      onClose();
+    },
+    onError: ({ error }) => {
+      toast.error(error.serverError ?? "Erro ao excluir produto. Tente novamente.");
+    },
+  });
 
   useEffect(() => {
     if (product) {
@@ -56,25 +92,18 @@ export function ProductFormDialog({ modelId, modelName, product, open, onClose }
     }
 
     if (isEditing && product) {
-      updateProduct(modelId, product.id, {
-        name: name.trim(),
-        price: parsedPrice,
-        color: color.trim(),
-      });
-      toast.success(`Produto "${name}" atualizado.`);
+      executeSave({ productId: product.id, name: name.trim(), price: parsedPrice, colorName: color.trim() });
     } else {
-      addProduct(modelId, { name: name.trim(), price: parsedPrice, color: color.trim() });
-      toast.success(`Produto "${name}" cadastrado em ${modelName}.`);
+      executeSave({ modelSlug: modelId, name: name.trim(), price: parsedPrice, colorName: color.trim() });
     }
-    onClose();
   }
 
   function handleDelete() {
     if (!product) return;
-    deleteProduct(modelId, product.id);
-    toast.success(`Produto "${product.name}" removido.`);
-    onClose();
+    executeDelete({ productId: product.id });
   }
+
+  const isPending = isSaving || isDeleting;
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
@@ -122,19 +151,21 @@ export function ProductFormDialog({ modelId, modelName, product, open, onClose }
 
         <DialogFooter className="flex-row items-center justify-between sm:justify-between">
           {isEditing ? (
-            <Button variant="destructive" size="sm" onClick={handleDelete} className="gap-1.5">
+            <Button variant="destructive" size="sm" onClick={handleDelete} disabled={isPending} className="gap-1.5">
               <Trash2 className="size-4" />
-              Excluir
+              {isDeleting ? "Excluindo..." : "Excluir"}
             </Button>
           ) : (
             <span />
           )}
 
           <div className="flex gap-2">
-            <Button variant="outline" onClick={onClose}>
+            <Button variant="outline" onClick={onClose} disabled={isPending}>
               Cancelar
             </Button>
-            <Button onClick={handleSave}>{isEditing ? "Salvar" : "Cadastrar"}</Button>
+            <Button onClick={handleSave} disabled={isPending}>
+              {isSaving ? "Salvando..." : isEditing ? "Salvar" : "Cadastrar"}
+            </Button>
           </div>
         </DialogFooter>
       </DialogContent>
