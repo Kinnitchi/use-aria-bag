@@ -120,7 +120,16 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    scrollbar-gutter: stable;
+  }
   body {
     @apply bg-background text-foreground;
+  }
+  /* Radix adds padding-right compensation when locking scroll;
+     with scrollbar-gutter:stable the space is already reserved */
+  [data-scroll-locked] {
+    padding-right: 0 !important;
+    margin-right: 0 !important;
   }
 }

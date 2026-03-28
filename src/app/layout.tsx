@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { Toaster } from "sonner";
 import { CartProvider } from "@/src/contexts/cart-context";
 import { CatalogProvider } from "@/src/contexts/catalog-context";
+import { AuthProvider } from "@/src/contexts/auth-context";
 import { getModels, getProducts } from "@/src/db/queries";
 import "./globals.css";
 
@@ -51,10 +52,12 @@ export default async function RootLayout({
     <html lang="pt-BR">
       <body className={`${inter.variable} ${cormorant.variable} font-sans antialiased`}>
         <CatalogProvider initialModels={initialModels} initialProducts={initialProducts}>
-          <CartProvider>
-            {children}
-            <Toaster position="bottom-right" richColors />
-          </CartProvider>
+          <AuthProvider>
+            <CartProvider>
+              {children}
+              <Toaster position="bottom-right" richColors />
+            </CartProvider>
+          </AuthProvider>
         </CatalogProvider>
         <Analytics />
       </body>

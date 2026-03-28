@@ -4,7 +4,7 @@
 
 import { eq } from "drizzle-orm";
 import { db } from "./index";
-import { modelsTable, productsTable, slidesTable } from "./schema";
+import { modelsTable, ordersTable, productsTable, slidesTable } from "./schema";
 import type { Model, Product, Slide } from "../types";
 
 // ─── Models ───────────────────────────────────────────────────────────────────
@@ -103,4 +103,22 @@ export async function getSlides(): Promise<Slide[]> {
     description: s.description,
     index: s.displayOrder,
   }));
+}
+
+// ─── Orders ───────────────────────────────────────────────────────────────────
+
+export async function getOrdersByEmail(email: string) {
+  return db.query.ordersTable.findMany({
+    where: eq(ordersTable.guestEmail, email),
+    with: {
+      items: {
+        with: {
+          product: {
+            with: { model: true, color: true },
+          },
+        },
+      },
+    },
+    orderBy: (t, { desc }) => desc(t.createdAt),
+  });
 }

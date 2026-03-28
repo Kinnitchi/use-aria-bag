@@ -8,6 +8,13 @@
       "when": 1774488441904,
       "tag": "0000_aspiring_sabretooth",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1774667353565,
+      "tag": "0001_calm_kid_colt",
+      "breakpoints": true
     }
   ]
 }
