@@ -24,7 +24,7 @@ export function AddToCartButton({ modelId, productId, productName, price, color,
   return (
     <Button
       onClick={handleAddToCart}
-      className="text-background hover:bg-accent/90 cursor-pointer rounded-sm px-8 py-6 text-sm tracking-wider uppercase"
+      className="text-background hover:bg-ring/90 cursor-pointer rounded-sm px-8 py-6 text-sm tracking-wider uppercase"
     >
       Adicionar a sacola
     </Button>

@@ -10,7 +10,7 @@ export function StatCard({ label, value, sub, icon: Icon, accent = false }: Stat
   return (
     <div
       className={`border-border flex flex-col gap-3 rounded-2xl border p-6 shadow-sm ${
-        accent ? "bg-primary text-primary-foreground" : "bg-card text-foreground"
+        accent ? "bg-ring text-primary-foreground" : "bg-card text-foreground"
       }`}
     >
       <div className="flex items-center justify-between">

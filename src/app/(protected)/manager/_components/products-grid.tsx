@@ -49,7 +49,7 @@ export function ProductsGrid({ onEditProduct, onAddProduct }: ProductsGridProps)
                 {modelProducts.map((product) => (
                   <li key={product.id} className="flex items-center justify-between gap-2 py-3">
                     <div className="flex min-w-0 items-center gap-2">
-                      <span className="bg-accent size-2 shrink-0 rounded-full" />
+                      <span className="bg-ring size-2 shrink-0 rounded-full" />
                       <span className="text-foreground truncate text-sm">{product.name}</span>
                     </div>
                     <div className="ml-2 flex shrink-0 items-center gap-2">
