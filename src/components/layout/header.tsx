@@ -14,6 +14,8 @@ import {
   Package,
   LogOut,
   Layers,
+  Plus,
+  Minus,
 } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import {
@@ -70,7 +72,7 @@ function useCollectionsNavCarrosel() {
 export function Header() {
   const goToCollections = useCollectionsNav();
   const goToCollectionsCarrosel = useCollectionsNavCarrosel();
-  const { items, removeItem, totalItems, totalPrice } = useCart();
+  const { items, removeItem, updateQuantity, totalItems, totalPrice } = useCart();
   const { user, isLoggedIn, isAdmin, logout } = useAuth();
 
   async function handleLogout() {
@@ -279,47 +281,83 @@ export function Header() {
                   <span className="sr-only">Carrinho</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="bg-background flex w-80 flex-col">
-                <SheetHeader>
+              <SheetContent side="right" className="bg-background flex w-80 flex-col p-0">
+                <SheetHeader className="border-border border-b px-5 py-4">
                   <SheetTitle className="font-serif text-xl">Sua Sacola</SheetTitle>
+                  {totalItems > 0 && (
+                    <p className="text-muted-foreground text-xs">
+                      {totalItems} {totalItems === 1 ? "item" : "itens"}
+                    </p>
+                  )}
                 </SheetHeader>
+
                 {items.length === 0 ? (
-                  <div className="flex flex-1 items-center justify-center">
+                  <div className="flex flex-1 flex-col items-center justify-center gap-3">
+                    <ShoppingBag className="text-muted-foreground h-10 w-10" strokeWidth={1.2} />
                     <p className="text-muted-foreground text-sm">Sua sacola está vazia.</p>
                   </div>
                 ) : (
                   <>
-                    <div className="mt-4 flex-1 space-y-4 overflow-y-auto pr-1">
+                    <div className="flex-1 space-y-1 overflow-y-auto px-4 py-3">
                       {items.map((item) => (
-                        <div key={item.cartId} className="flex items-start gap-3">
+                        <div key={item.cartId} className="flex items-center gap-3 py-3">
+                          {/* Thumbnail */}
                           <div className="bg-muted relative h-16 w-16 shrink-0 overflow-hidden rounded-md">
                             <Image src={item.image} alt={item.name} fill className="object-cover" />
                           </div>
+
+                          {/* Info */}
                           <div className="min-w-0 flex-1">
-                            <p className="text-foreground text-sm leading-tight font-medium">{item.name}</p>
-                            <p className="text-muted-foreground text-xs">
-                              {item.color} · Qtd: {item.quantity}
-                            </p>
-                            <p className="text-foreground mt-1 text-sm font-medium">
+                            <p className="text-foreground truncate text-sm leading-tight font-medium">{item.name}</p>
+                            <p className="text-muted-foreground mt-0.5 text-xs">{item.color}</p>
+                            <p className="text-foreground mt-1 text-sm font-semibold">
                               R$ {(item.price * item.quantity).toLocaleString("pt-BR")}
                             </p>
                           </div>
-                          <button
-                            aria-label="Remover item"
-                            onClick={() => removeItem(item.cartId)}
-                            className="text-muted-foreground hover:text-destructive p-1 transition-colors"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
+
+                          {/* Quantity Controls */}
+                          <div className="flex shrink-0 flex-col items-center gap-1.5">
+                            <button
+                              aria-label="Remover item"
+                              onClick={() => removeItem(item.cartId)}
+                              className="text-muted-foreground hover:text-destructive transition-colors"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                            <div className="border-border flex items-center gap-1 rounded-md border">
+                              <button
+                                aria-label="Diminuir quantidade"
+                                onClick={() => updateQuantity(item.cartId, -1)}
+                                className="text-foreground hover:bg-muted flex h-6 w-6 items-center justify-center rounded-l-md transition-colors"
+                              >
+                                <Minus className="h-3 w-3" />
+                              </button>
+                              <span className="text-foreground w-5 text-center text-xs font-medium tabular-nums">
+                                {item.quantity}
+                              </span>
+                              <button
+                                aria-label="Aumentar quantidade"
+                                onClick={() => updateQuantity(item.cartId, 1)}
+                                className="text-foreground hover:bg-muted flex h-6 w-6 items-center justify-center rounded-r-md transition-colors"
+                              >
+                                <Plus className="h-3 w-3" />
+                              </button>
+                            </div>
+                          </div>
                         </div>
                       ))}
                     </div>
-                    <div className="border-border mt-4 border-t pt-4">
-                      <div className="mb-4 flex justify-between">
-                        <span className="text-foreground font-medium">Total</span>
-                        <span className="text-foreground font-medium">R$ {totalPrice.toLocaleString("pt-BR")}</span>
+
+                    {/* Footer */}
+                    <div className="border-border border-t px-4 py-4">
+                      <div className="mb-1 flex justify-between">
+                        <span className="text-muted-foreground text-sm">Subtotal</span>
+                        <span className="text-foreground text-sm font-semibold">
+                          R$ {totalPrice.toLocaleString("pt-BR")}
+                        </span>
                       </div>
-                      <Button className="w-full" style={{ backgroundColor: "var(--color-ring)" }}>
+                      <p className="text-muted-foreground mb-4 text-xs">Frete calculado no checkout</p>
+                      <Button className="w-full cursor-pointer" style={{ backgroundColor: "var(--color-ring)" }}>
                         Finalizar Compra
                       </Button>
                     </div>
