@@ -2,9 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Header } from "@/src/components/layout/header";
-import { getModels, getModelBySlug, getProductsByModelSlug } from "@/src/db/queries";
-import { AddToCartButton } from "@/src/components/shared/add-to-cart-button";
+import { getModels, getModelBySlug, getProductsByModelSlug, getRandomProducts } from "@/src/db/queries";
 import { ProductCard } from "@/src/components/shared/product-card";
+import { ColorProductSelector } from "./_components/color-product-selector";
+import { SuggestedProductCard } from "./_components/suggested-product-card";
 
 export async function generateStaticParams() {
   const models = await getModels();
@@ -38,6 +39,7 @@ export default async function ModelPage({ params }: { params: Promise<{ slug: st
   }
 
   const products = await getProductsByModelSlug(slug);
+  const suggestedProducts = await getRandomProducts(slug);
 
   return (
     <main className="bg-background min-h-screen">
@@ -61,50 +63,32 @@ export default async function ModelPage({ params }: { params: Promise<{ slug: st
             <div className="flex items-center gap-4">
               <span className="text-muted-foreground text-sm">{model.count} produtos disponíveis</span>
             </div>
-            <div className="flex items-center gap-4">
-              <span className="text-muted-foreground text-sm">
-                Cores: Bege, Preto, Caramelo, Vinho, Verde Oliva, Marrom, Terracota
-              </span>
-            </div>
-            <div className="mt-8 flex items-center gap-4">
-              {products[0] && (
-                <AddToCartButton
-                  modelId={slug}
-                  productId={products[0].id}
-                  productName={products[0].name}
-                  price={products[0].price}
-                  color={products[0].color}
-                  image={model.image}
-                />
-              )}
+            <div className="mt-8">
+              <ColorProductSelector products={products} modelId={slug} modelImage={model.image} />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Products Grid */}
-      <section className="bg-background py-16 md:py-24">
-        <div className="container mx-auto px-4">
-          <div className="mb-12 text-center">
-            <p className="text-muted-foreground mb-4 text-sm tracking-[0.3em] uppercase">Explore</p>
-            <h2 className="text-foreground font-serif text-3xl font-medium md:text-4xl">Bolsas {model.name}</h2>
-          </div>
 
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:gap-8 lg:grid-cols-3">
-            {products.map((product) => (
-              <ProductCard
-                key={product.id}
-                modelId={slug}
-                productId={product.id}
-                name={product.name}
-                price={product.price}
-                color={product.color}
-                image={model.image}
-              />
-            ))}
+      {/* Suggested Products */}
+      {suggestedProducts.length > 0 && (
+        <section className="bg-secondary/30 py-16 md:py-24">
+          <div className="container mx-auto px-4">
+            <div className="mb-12 text-center">
+              <p className="text-muted-foreground mb-4 text-sm uppercase tracking-[0.3em]">Sugestões</p>
+              <h2 className="text-foreground font-serif text-3xl font-medium md:text-4xl">
+                Você também pode gostar
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:gap-8 lg:grid-cols-3">
+              {suggestedProducts.map((product) => (
+                <SuggestedProductCard key={product.id} product={product} />
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* CTA Section */}
       <section className="bg-secondary py-16 md:py-20">

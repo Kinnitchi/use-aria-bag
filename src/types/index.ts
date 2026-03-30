@@ -14,6 +14,18 @@ export interface Product {
   name: string;
   price: number;
   color: string;
+  colorHex?: string;
+}
+
+export interface SuggestedProduct {
+  id: string;
+  name: string;
+  price: number;
+  color: string;
+  colorHex: string;
+  modelSlug: string;
+  modelName: string;
+  modelImage: string;
 }
 
 export interface Slide {

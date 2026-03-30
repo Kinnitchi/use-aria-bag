@@ -5,7 +5,7 @@
 import { eq } from "drizzle-orm";
 import { db } from "./index";
 import { modelsTable, ordersTable, productsTable, slidesTable } from "./schema";
-import type { Model, Product, Slide } from "../types";
+import type { Model, Product, Slide, SuggestedProduct } from "../types";
 
 // ─── Models ───────────────────────────────────────────────────────────────────
 
@@ -83,6 +83,39 @@ export async function getProductsByModelSlug(slug: string): Promise<Product[]> {
     name: p.name,
     price: p.priceInCents / 100,
     color: p.color.name,
+    colorHex: p.color.hexCode,
+  }));
+}
+
+export async function getRandomProducts(excludeModelSlug?: string, limit = 3): Promise<SuggestedProduct[]> {
+  const rows = await db.query.productsTable.findMany({
+    where: eq(productsTable.isActive, true),
+    with: { model: true, color: true },
+  });
+
+  const filtered = excludeModelSlug ? rows.filter((r) => r.model.slug !== excludeModelSlug) : rows;
+
+  // Group by model, pick one random product per model, then shuffle and slice
+  const byModel = new Map<string, typeof filtered>();
+  for (const p of filtered) {
+    const slug = p.model.slug;
+    if (!byModel.has(slug)) byModel.set(slug, []);
+    byModel.get(slug)!.push(p);
+  }
+
+  const onePerModel = [...byModel.values()].map((group) => group[Math.floor(Math.random() * group.length)]);
+
+  const shuffled = onePerModel.sort(() => Math.random() - 0.5).slice(0, limit);
+
+  return shuffled.map((p) => ({
+    id: p.id,
+    name: p.name,
+    price: p.priceInCents / 100,
+    color: p.color.name,
+    colorHex: p.color.hexCode,
+    modelSlug: p.model.slug,
+    modelName: p.model.name,
+    modelImage: p.model.image,
   }));
 }
 
