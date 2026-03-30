@@ -3,9 +3,27 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { ShoppingBag, Menu, User, Trash2, LogIn, UserPlus, LayoutDashboard, Package, LogOut } from "lucide-react";
+import {
+  ShoppingBag,
+  Menu,
+  User,
+  Trash2,
+  LogIn,
+  UserPlus,
+  LayoutDashboard,
+  Package,
+  LogOut,
+  Layers,
+} from "lucide-react";
 import { Button } from "@/src/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/src/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/src/components/ui/sheet";
 import { useCart } from "@/src/contexts/cart-context";
 import { useAuth } from "@/src/contexts/auth-context";
 import {
@@ -70,18 +88,98 @@ export function Header() {
                 <span className="sr-only">Abrir menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="bg-background w-70">
-              <nav className="mt-8 flex flex-col gap-4">
+            <SheetContent side="left" className="bg-background flex w-72 flex-col p-0">
+              {/* Header */}
+              <SheetHeader className="border-border border-b px-6 py-5">
+                <SheetTitle className="font-serif text-xl tracking-wider">Ária bags</SheetTitle>
+                <SheetDescription className="sr-only">Menu de navegação</SheetDescription>
+              </SheetHeader>
+
+              {/* Navigation */}
+              <nav className="py- flex flex-col gap-1 px-3">
+                <p className="text-muted-foreground mb-1 px-3 text-xs font-semibold tracking-widest uppercase">
+                  Navegação
+                </p>
                 <button
                   onClick={() => smoothScrollToCollections("modelos")}
-                  className="text-foreground hover:text-ring text-left text-lg font-medium transition-colors focus-visible:outline-none"
+                  className="text-foreground hover:bg-muted hover:text-ring flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors focus-visible:outline-none"
                 >
+                  <Layers className="text-muted-foreground h-4 w-4 shrink-0" />
                   Coleções
                 </button>
-                <Link href="#" className="text-foreground hover:text-ring text-lg font-medium transition-colors">
+                <Link
+                  href="#"
+                  className="text-foreground hover:bg-muted hover:text-ring flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors"
+                >
+                  <Package className="text-muted-foreground h-4 w-4 shrink-0" />
                   Contato
                 </Link>
               </nav>
+
+              {/* Spacer */}
+              <div className="flex-1" />
+
+              {/* Account Section */}
+              <div className="border-border border-t p-3">
+                {isLoggedIn ? (
+                  <>
+                    {/* User Info */}
+                    <div className="bg-muted mb-2 flex items-center gap-3 rounded-md px-3 py-3">
+                      <div className="bg-ring text-background flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold">
+                        {user?.name?.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-foreground truncate text-sm leading-tight font-medium">{user?.name}</p>
+                        <p className="text-muted-foreground truncate text-xs">{user?.email}</p>
+                      </div>
+                    </div>
+
+                    {/* Account Links */}
+                    <div className="flex flex-col gap-1">
+                      {isAdmin && (
+                        <Link
+                          href="/manager"
+                          className="text-foreground hover:bg-muted hover:text-ring flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors"
+                        >
+                          <LayoutDashboard className="text-muted-foreground h-4 w-4 shrink-0" />
+                          Dashboard
+                        </Link>
+                      )}
+                      <Link
+                        href="/conta/pedidos"
+                        className="text-foreground hover:bg-muted hover:text-ring flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors"
+                      >
+                        <ShoppingBag className="text-muted-foreground h-4 w-4 shrink-0" />
+                        Meus Pedidos
+                      </Link>
+                      <button
+                        onClick={handleLogout}
+                        className="text-destructive hover:bg-destructive/10 flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors focus-visible:outline-none"
+                      >
+                        <LogOut className="h-4 w-4 shrink-0" />
+                        Sair
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    <Link
+                      href="/autenticacao/login"
+                      className="bg-ring text-background hover:bg-ring/90 flex items-center justify-center gap-2 rounded-md px-3 py-2.5 text-sm font-medium transition-colors"
+                    >
+                      <LogIn className="h-4 w-4 shrink-0" />
+                      Entrar
+                    </Link>
+                    <Link
+                      href="/autenticacao/cadastro"
+                      className="border-border text-foreground hover:bg-muted flex items-center justify-center gap-2 rounded-md border px-3 py-2.5 text-sm font-medium transition-colors"
+                    >
+                      <UserPlus className="h-4 w-4 shrink-0" />
+                      Criar conta
+                    </Link>
+                  </div>
+                )}
+              </div>
             </SheetContent>
           </Sheet>
 
