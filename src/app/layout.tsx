@@ -50,7 +50,7 @@ export default async function RootLayout({
 
   return (
     <html lang="pt-BR">
-      <body className={`${inter.variable} ${cormorant.variable} font-sans antialiased`}>
+      <body suppressHydrationWarning className={`${inter.variable} ${cormorant.variable} font-sans antialiased`}>
         <CatalogProvider initialModels={initialModels} initialProducts={initialProducts}>
           <AuthProvider>
             <CartProvider>
