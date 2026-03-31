@@ -4,7 +4,13 @@ import { eq } from "drizzle-orm";
 import { adminActionClient } from "@/src/lib/safe-action";
 import { db } from "@/src/db";
 import { colorsTable, modelsTable, productsTable } from "@/src/db/schema";
-import { updateModelSchema, addProductSchema, updateProductSchema, deleteProductSchema } from "./schema";
+import {
+  createModelSchema,
+  updateModelSchema,
+  addProductSchema,
+  updateProductSchema,
+  deleteProductSchema,
+} from "./schema";
 
 // ─── Helper ───────────────────────────────────────────────────────────────────
 
@@ -24,6 +30,25 @@ async function findOrCreateColor(colorName: string): Promise<string> {
 }
 
 // ─── Actions ──────────────────────────────────────────────────────────────────
+
+export const createModelAction = adminActionClient.schema(createModelSchema).action(async ({ parsedInput }) => {
+  const { name, description, fullDescription, image } = parsedInput;
+
+  const slug = name
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-");
+
+  const [model] = await db
+    .insert(modelsTable)
+    .values({ slug, name, description, fullDescription, image })
+    .returning({ id: modelsTable.id, slug: modelsTable.slug });
+
+  return { modelId: model.id, slug: model.slug };
+});
 
 export const updateModelAction = adminActionClient.schema(updateModelSchema).action(async ({ parsedInput }) => {
   const { modelSlug, name, description, fullDescription, image } = parsedInput;

@@ -6,6 +6,7 @@ import type { Model, Product } from "@/src/types";
 interface CatalogContextType {
   models: Model[];
   products: Record<string, Product[]>;
+  addModel: (model: Model) => void;
   updateModel: (modelId: string, updates: Partial<Omit<Model, "id">>) => void;
   updateProduct: (modelId: string, productId: string, updates: Partial<Omit<Product, "id">>) => void;
   addProduct: (modelId: string, product: Product) => void;
@@ -25,6 +26,10 @@ export function CatalogProvider({
 }) {
   const [models, setModels] = useState<Model[]>(initialModels);
   const [products, setProducts] = useState<Record<string, Product[]>>(initialProducts);
+
+  function addModel(model: Model) {
+    setModels((prev) => [...prev, model]);
+  }
 
   function updateModel(modelId: string, updates: Partial<Omit<Model, "id">>) {
     setModels((prev) => prev.map((m) => (m.id === modelId ? { ...m, ...updates } : m)));
@@ -52,7 +57,9 @@ export function CatalogProvider({
   }
 
   return (
-    <CatalogContext.Provider value={{ models, products, updateModel, updateProduct, addProduct, deleteProduct }}>
+    <CatalogContext.Provider
+      value={{ models, products, addModel, updateModel, updateProduct, addProduct, deleteProduct }}
+    >
       {children}
     </CatalogContext.Provider>
   );

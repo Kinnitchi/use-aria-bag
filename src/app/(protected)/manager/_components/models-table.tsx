@@ -4,6 +4,7 @@ import { Pencil } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { useCatalog } from "@/src/contexts/catalog-context";
 import type { Model } from "@/src/types";
+import { NewModel } from "../_components/new-model";
 
 interface ModelsTableProps {
   onEditModel: (model: Model) => void;
@@ -15,6 +16,7 @@ export function ModelsTable({ onEditModel }: ModelsTableProps) {
   return (
     <section>
       <h2 className="text-muted-foreground mb-5 text-xs tracking-widest uppercase">Gerenciar Modelos</h2>
+      <NewModel />
       <div className="border-border bg-card overflow-hidden rounded-2xl border shadow-sm">
         <table className="w-full text-sm">
           <thead>

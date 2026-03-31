@@ -53,6 +53,7 @@ type AddressFormData = z.infer<typeof addressSchema>;
 interface ProfileFormProps {
   initialName: string;
   email: string;
+  role: string;
   initialAddress: AddressFormData;
 }
 
@@ -118,7 +119,7 @@ function CardHeader({ icon: Icon, title, subtitle }: { icon: React.ElementType; 
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export function ProfileForm({ initialName, email, initialAddress }: ProfileFormProps) {
+export function ProfileForm({ initialName, email, role, initialAddress }: ProfileFormProps) {
   const [currentName, setCurrentName] = useState(initialName);
   const [profileSaved, setProfileSaved] = useState(false);
 
@@ -159,7 +160,6 @@ export function ProfileForm({ initialName, email, initialAddress }: ProfileFormP
   });
 
   // ── Handlers ────────────────────────────────────────────────────────────
-
   async function onProfileSubmit(data: ProfileFormData) {
     const { error } = await authClient.updateUser({ name: data.name });
     if (error) {
@@ -199,7 +199,7 @@ export function ProfileForm({ initialName, email, initialAddress }: ProfileFormP
           <p className="text-foreground truncate font-serif text-xl font-medium">{currentName}</p>
           <p className="text-muted-foreground mt-0.5 truncate text-sm">{email}</p>
           <span className="bg-secondary text-muted-foreground mt-2 inline-block rounded-full px-3 py-0.5 text-xs font-medium tracking-wide uppercase">
-            Cliente
+            {role === "admin" ? "Admin" : "Cliente"}
           </span>
         </div>
       </div>
@@ -270,11 +270,7 @@ export function ProfileForm({ initialName, email, initialAddress }: ProfileFormP
               <Label htmlFor="newPassword" className="text-sm font-medium">
                 Nova senha
               </Label>
-              <PasswordInput
-                id="newPassword"
-                placeholder="Mínimo 8 caracteres"
-                {...registerPassword("newPassword")}
-              />
+              <PasswordInput id="newPassword" placeholder="Mínimo 8 caracteres" {...registerPassword("newPassword")} />
               {passwordErrors.newPassword && (
                 <p className="text-destructive text-xs">{passwordErrors.newPassword.message}</p>
               )}
@@ -310,7 +306,11 @@ export function ProfileForm({ initialName, email, initialAddress }: ProfileFormP
 
       {/* ── Endereço de entrega (largura total) ─────────────────────────── */}
       <div className="bg-card border-border rounded-xl border">
-        <CardHeader icon={MapPin} title="Endereço de entrega" subtitle="Usado para calcular o frete e enviar seus pedidos" />
+        <CardHeader
+          icon={MapPin}
+          title="Endereço de entrega"
+          subtitle="Usado para calcular o frete e enviar seus pedidos"
+        />
         <form onSubmit={handleAddress(onAddressSubmit)} className="p-6">
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {/* Telefone */}
@@ -376,7 +376,11 @@ export function ProfileForm({ initialName, email, initialAddress }: ProfileFormP
               <Label htmlFor="addressComplement" className="text-sm font-medium">
                 Complemento <span className="text-muted-foreground font-normal">(opcional)</span>
               </Label>
-              <Input id="addressComplement" placeholder="Apto, Bloco, Casa..." {...registerAddress("addressComplement")} />
+              <Input
+                id="addressComplement"
+                placeholder="Apto, Bloco, Casa..."
+                {...registerAddress("addressComplement")}
+              />
             </div>
 
             {/* Bairro */}

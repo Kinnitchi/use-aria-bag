@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { eq } from "drizzle-orm";
 
 import { auth } from "@/src/lib/auth";
+import type { AuthUser } from "@/src/lib/auth";
 import { db } from "@/src/db";
 import { authUserTable } from "@/src/db/schema";
 import { Header } from "@/src/components/layout/header";
@@ -17,6 +18,7 @@ export const metadata = {
 export default async function ProfilePage() {
   const session = await auth.api.getSession({ headers: await headers() });
 
+  console.log("session:", session);
   if (!session) {
     redirect("/authentication/login");
   }
@@ -48,6 +50,7 @@ export default async function ProfilePage() {
         <ProfileForm
           initialName={session.user.name}
           email={session.user.email}
+          role={(session.user as AuthUser).role ?? "customer"}
           initialAddress={{
             phone: userRecord?.phone ?? "",
             addressZipCode: userRecord?.addressZipCode ?? "",

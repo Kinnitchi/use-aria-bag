@@ -1,5 +1,12 @@
 import { z } from "zod";
 
+export const createModelSchema = z.object({
+  name: z.string().min(1, "Nome é obrigatório"),
+  description: z.string().min(1, "Descrição curta é obrigatória"),
+  fullDescription: z.string().min(1, "Descrição completa é obrigatória"),
+  image: z.string().min(1, "URL da imagem é obrigatória"),
+});
+
 export const updateModelSchema = z.object({
   modelSlug: z.string().min(1),
   name: z.string().min(1, "Nome é obrigatório"),
