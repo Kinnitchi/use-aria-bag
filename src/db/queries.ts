@@ -3,14 +3,14 @@
  */
 
 import { eq, or } from "drizzle-orm";
-import { db } from "./index";
+import { dbReadOnly } from "./index";
 import { modelsTable, ordersTable, productsTable, slidesTable } from "./schema";
 import type { Model, Product, Slide, SuggestedProduct } from "../types";
 
 // ─── Models ───────────────────────────────────────────────────────────────────
 
 export async function getModels(): Promise<Model[]> {
-  const rows = await db.query.modelsTable.findMany({
+  const rows = await dbReadOnly.query.modelsTable.findMany({
     where: eq(modelsTable.isActive, true),
     with: { products: true },
     orderBy: (t, { asc }) => asc(t.createdAt),
@@ -27,7 +27,7 @@ export async function getModels(): Promise<Model[]> {
 }
 
 export async function getModelBySlug(slug: string): Promise<Model | null> {
-  const m = await db.query.modelsTable.findFirst({
+  const m = await dbReadOnly.query.modelsTable.findFirst({
     where: eq(modelsTable.slug, slug),
     with: { products: true },
   });
@@ -47,7 +47,7 @@ export async function getModelBySlug(slug: string): Promise<Model | null> {
 // ─── Products ─────────────────────────────────────────────────────────────────
 
 export async function getProducts(): Promise<Record<string, Product[]>> {
-  const rows = await db.query.productsTable.findMany({
+  const rows = await dbReadOnly.query.productsTable.findMany({
     where: eq(productsTable.isActive, true),
     with: { model: true, color: true },
   });
@@ -67,13 +67,13 @@ export async function getProducts(): Promise<Record<string, Product[]>> {
 }
 
 export async function getProductsByModelSlug(slug: string): Promise<Product[]> {
-  const model = await db.query.modelsTable.findFirst({
+  const model = await dbReadOnly.query.modelsTable.findFirst({
     where: eq(modelsTable.slug, slug),
   });
 
   if (!model) return [];
 
-  const rows = await db.query.productsTable.findMany({
+  const rows = await dbReadOnly.query.productsTable.findMany({
     where: eq(productsTable.modelId, model.id),
     with: { color: true },
   });
@@ -88,7 +88,7 @@ export async function getProductsByModelSlug(slug: string): Promise<Product[]> {
 }
 
 export async function getRandomProducts(excludeModelSlug?: string, limit = 3): Promise<SuggestedProduct[]> {
-  const rows = await db.query.productsTable.findMany({
+  const rows = await dbReadOnly.query.productsTable.findMany({
     where: eq(productsTable.isActive, true),
     with: { model: true, color: true },
   });
@@ -122,7 +122,7 @@ export async function getRandomProducts(excludeModelSlug?: string, limit = 3): P
 // ─── Slides ───────────────────────────────────────────────────────────────────
 
 export async function getSlides(): Promise<Slide[]> {
-  const rows = await db.query.slidesTable.findMany({
+  const rows = await dbReadOnly.query.slidesTable.findMany({
     where: eq(slidesTable.isActive, true),
     with: { model: true },
     orderBy: (t, { asc }) => asc(t.displayOrder),
@@ -153,7 +153,7 @@ export async function getSlides(): Promise<Slide[]> {
  *   cobrir pedidos guest associados à conta.
  */
 export async function getOrdersByUser(userId: string, email: string) {
-  return db.query.ordersTable.findMany({
+  return dbReadOnly.query.ordersTable.findMany({
     where: or(eq(ordersTable.userId, userId), eq(ordersTable.guestEmail, email)),
     with: {
       items: {
