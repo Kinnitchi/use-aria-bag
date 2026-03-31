@@ -2,6 +2,7 @@
 
 import { eq } from "drizzle-orm";
 import { adminActionClient } from "@/src/lib/safe-action";
+import { logSecurityEvent } from "@/src/lib/logger";
 import { db } from "@/src/db";
 import { colorsTable, modelsTable, productsTable } from "@/src/db/schema";
 import {
@@ -31,7 +32,7 @@ async function findOrCreateColor(colorName: string): Promise<string> {
 
 // ─── Actions ──────────────────────────────────────────────────────────────────
 
-export const createModelAction = adminActionClient.schema(createModelSchema).action(async ({ parsedInput }) => {
+export const createModelAction = adminActionClient.schema(createModelSchema).action(async ({ parsedInput, ctx }) => {
   const { name, description, fullDescription, image } = parsedInput;
 
   const slug = name
@@ -47,19 +48,29 @@ export const createModelAction = adminActionClient.schema(createModelSchema).act
     .values({ slug, name, description, fullDescription, image })
     .returning({ id: modelsTable.id, slug: modelsTable.slug });
 
+  logSecurityEvent("ADMIN_MODEL_CREATE", "info", {
+    userId: ctx.session.user.id,
+    details: { modelSlug: model.slug, name },
+  });
+
   return { modelId: model.id, slug: model.slug };
 });
 
-export const updateModelAction = adminActionClient.schema(updateModelSchema).action(async ({ parsedInput }) => {
+export const updateModelAction = adminActionClient.schema(updateModelSchema).action(async ({ parsedInput, ctx }) => {
   const { modelSlug, name, description, fullDescription, image } = parsedInput;
 
   await db
     .update(modelsTable)
     .set({ name, description, fullDescription, image, updatedAt: new Date() })
     .where(eq(modelsTable.slug, modelSlug));
+
+  logSecurityEvent("ADMIN_MODEL_UPDATE", "info", {
+    userId: ctx.session.user.id,
+    details: { modelSlug, name },
+  });
 });
 
-export const addProductAction = adminActionClient.schema(addProductSchema).action(async ({ parsedInput }) => {
+export const addProductAction = adminActionClient.schema(addProductSchema).action(async ({ parsedInput, ctx }) => {
   const { modelSlug, name, price, colorName } = parsedInput;
 
   const model = await db.query.modelsTable.findFirst({
@@ -81,23 +92,42 @@ export const addProductAction = adminActionClient.schema(addProductSchema).actio
     })
     .returning({ id: productsTable.id });
 
+  logSecurityEvent("ADMIN_PRODUCT_CREATE", "info", {
+    userId: ctx.session.user.id,
+    details: { productId: product.id, name, priceInCents: Math.round(price * 100), modelSlug },
+  });
+
   return { productId: product.id };
 });
 
-export const updateProductAction = adminActionClient.schema(updateProductSchema).action(async ({ parsedInput }) => {
-  const { productId, name, price, colorName } = parsedInput;
+export const updateProductAction = adminActionClient
+  .schema(updateProductSchema)
+  .action(async ({ parsedInput, ctx }) => {
+    const { productId, name, price, colorName } = parsedInput;
 
-  const colorId = await findOrCreateColor(colorName);
+    const colorId = await findOrCreateColor(colorName);
 
-  await db
-    .update(productsTable)
-    .set({ name, priceInCents: Math.round(price * 100), colorId, updatedAt: new Date() })
-    .where(eq(productsTable.id, productId));
-});
+    await db
+      .update(productsTable)
+      .set({ name, priceInCents: Math.round(price * 100), colorId, updatedAt: new Date() })
+      .where(eq(productsTable.id, productId));
 
-export const deleteProductAction = adminActionClient.schema(deleteProductSchema).action(async ({ parsedInput }) => {
-  await db
-    .update(productsTable)
-    .set({ isActive: false, updatedAt: new Date() })
-    .where(eq(productsTable.id, parsedInput.productId));
-});
+    logSecurityEvent("ADMIN_PRODUCT_UPDATE", "info", {
+      userId: ctx.session.user.id,
+      details: { productId, name, priceInCents: Math.round(price * 100) },
+    });
+  });
+
+export const deleteProductAction = adminActionClient
+  .schema(deleteProductSchema)
+  .action(async ({ parsedInput, ctx }) => {
+    await db
+      .update(productsTable)
+      .set({ isActive: false, updatedAt: new Date() })
+      .where(eq(productsTable.id, parsedInput.productId));
+
+    logSecurityEvent("ADMIN_PRODUCT_DELETE", "warn", {
+      userId: ctx.session.user.id,
+      details: { productId: parsedInput.productId },
+    });
+  });

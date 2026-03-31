@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { logSecurityEvent } from "./lib/logger";
 
 /**
  * Rate limiter in-memory para o middleware de Edge.
@@ -52,6 +53,10 @@ export function middleware(request: NextRequest) {
       request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? request.headers.get("x-real-ip") ?? "unknown";
 
     if (isRateLimited(ip)) {
+      logSecurityEvent("RATE_LIMIT_BLOCKED", "warn", {
+        ip,
+        details: { pathname },
+      });
       return NextResponse.json(
         { error: "Muitas tentativas. Tente novamente em alguns minutos." },
         {
