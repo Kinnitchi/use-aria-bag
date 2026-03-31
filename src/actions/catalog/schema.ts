@@ -1,10 +1,18 @@
 import { z } from "zod";
 
+const imageUrlSchema = z
+  .string()
+  .min(1, "URL da imagem é obrigatória")
+  .refine(
+    (val) => val.startsWith("/") || /^https:\/\/.+/.test(val),
+    "A imagem deve ser uma URL HTTPS válida ou um caminho relativo começando com /"
+  );
+
 export const createModelSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
   description: z.string().min(1, "Descrição curta é obrigatória"),
   fullDescription: z.string().min(1, "Descrição completa é obrigatória"),
-  image: z.string().min(1, "URL da imagem é obrigatória"),
+  image: imageUrlSchema,
 });
 
 export const updateModelSchema = z.object({
@@ -12,7 +20,7 @@ export const updateModelSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
   description: z.string().min(1, "Descrição é obrigatória"),
   fullDescription: z.string(),
-  image: z.string().min(1, "Caminho da imagem é obrigatório"),
+  image: imageUrlSchema,
 });
 
 export const addProductSchema = z.object({
