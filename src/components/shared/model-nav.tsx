@@ -21,7 +21,7 @@ export function ModelNav({ models }: ModelNavProps) {
           {models.map((model) => (
             <Link
               key={model.id}
-              href={`/modelos/${model.id}`}
+              href={`/models/${model.id}`}
               className="group relative py-2"
               onMouseEnter={() => setHoveredModel(model.id)}
               onMouseLeave={() => setHoveredModel(null)}
@@ -45,7 +45,7 @@ export function ModelNav({ models }: ModelNavProps) {
             {models.map((model) => (
               <Link
                 key={model.id}
-                href={`/modelos/${model.id}`}
+                href={`/models/${model.id}`}
                 className="text-foreground/80 hover:text-foreground py-2 text-sm font-medium tracking-wide whitespace-nowrap uppercase transition-colors"
               >
                 {model.name}
@@ -73,7 +73,7 @@ export function ModelShowcase({ models }: ModelNavProps) {
           {models.map((model) => (
             <Link
               key={model.id}
-              href={`/modelos/${model.id}`}
+              href={`/models/${model.id}`}
               id={model.id}
               className="group bg-card relative overflow-hidden rounded-lg"
             >

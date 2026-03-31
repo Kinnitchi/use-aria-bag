@@ -18,7 +18,7 @@ export default async function ProfilePage() {
   const session = await auth.api.getSession({ headers: await headers() });
 
   if (!session) {
-    redirect("/autenticacao/login");
+    redirect("/authentication/login");
   }
 
   const userRecord = await db.query.authUserTable.findFirst({

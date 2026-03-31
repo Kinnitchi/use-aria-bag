@@ -44,7 +44,7 @@ function useCollectionsNav() {
 
   return () => {
     if (pathname === "/") {
-      smoothScrollToCollections("modelos");
+      smoothScrollToCollections("models");
     } else {
       router.push("/#modelos");
     }
@@ -156,7 +156,7 @@ export function Header() {
                       </Link>
 
                       <Link
-                        href="/conta/pedidos"
+                        href="/account/orders"
                         className="text-foreground hover:bg-muted hover:text-ring flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors"
                       >
                         <ShoppingBag className="text-muted-foreground h-4 w-4 shrink-0" />
@@ -174,14 +174,14 @@ export function Header() {
                 ) : (
                   <div className="flex flex-col gap-2">
                     <Link
-                      href="/autenticacao/login"
+                      href="/authentication/login"
                       className="bg-ring text-background hover:bg-ring/90 flex items-center justify-center gap-2 rounded-md px-3 py-2.5 text-sm font-medium transition-colors"
                     >
                       <LogIn className="h-4 w-4 shrink-0" />
                       Entrar
                     </Link>
                     <Link
-                      href="/autenticacao/cadastro"
+                      href="/authentication/register"
                       className="border-border text-foreground hover:bg-muted flex items-center justify-center gap-2 rounded-md border px-3 py-2.5 text-sm font-medium transition-colors"
                     >
                       <UserPlus className="h-4 w-4 shrink-0" />
@@ -237,7 +237,7 @@ export function Header() {
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link href="/conta/pedidos" className="flex cursor-pointer items-center gap-2">
+                        <Link href="/account/orders" className="flex cursor-pointer items-center gap-2">
                           <Package className="focus:text-accent-foreground h-4 w-4" />
                           Meus Pedidos
                         </Link>
@@ -266,13 +266,13 @@ export function Header() {
                     <DropdownMenuSeparator />
                     <DropdownMenuGroup>
                       <DropdownMenuItem asChild>
-                        <Link href="/autenticacao/login" className="flex cursor-pointer items-center gap-2">
+                        <Link href="/authentication/login" className="flex cursor-pointer items-center gap-2">
                           <LogIn className="focus:text-accent-foreground h-4 w-4" />
                           Entrar
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link href="/autenticacao/cadastro" className="flex cursor-pointer items-center gap-2">
+                        <Link href="/authentication/register" className="flex cursor-pointer items-center gap-2">
                           <UserPlus className="focus:text-accent-foreground h-4 w-4" />
                           Criar conta
                         </Link>

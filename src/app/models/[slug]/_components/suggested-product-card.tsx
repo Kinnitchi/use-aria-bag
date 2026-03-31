@@ -27,7 +27,7 @@ export function SuggestedProductCard({ product }: SuggestedProductCardProps) {
 
   return (
     <article className="group bg-card overflow-hidden rounded-lg">
-      <Link href={`/modelos/${product.modelSlug}`} className="block">
+      <Link href={`/models/${product.modelSlug}`} className="block">
         <div className="bg-muted relative aspect-4/5 overflow-hidden">
           <Image
             src={product.modelImage}
@@ -39,7 +39,7 @@ export function SuggestedProductCard({ product }: SuggestedProductCardProps) {
         </div>
       </Link>
       <div className="p-6">
-        <p className="text-muted-foreground mb-1 text-xs uppercase tracking-[0.2em]">{product.modelName}</p>
+        <p className="text-muted-foreground mb-1 text-xs tracking-[0.2em] uppercase">{product.modelName}</p>
         <h3 className="text-foreground mb-2 font-serif text-lg font-medium">{product.name}</h3>
         <div className="mb-3 flex items-center gap-2">
           <span

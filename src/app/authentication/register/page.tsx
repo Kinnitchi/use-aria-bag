@@ -9,19 +9,26 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
-import { signIn } from "@/src/lib/auth-client";
+import { signUp } from "@/src/lib/auth-client";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
 
-const loginSchema = z.object({
-  email: z.string().email("E-mail inválido"),
-  password: z.string().min(1, "Senha é obrigatória"),
-});
+const cadastroSchema = z
+  .object({
+    name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
+    email: z.string().email("E-mail inválido"),
+    password: z.string().min(8, "Senha deve ter pelo menos 8 caracteres"),
+    confirmPassword: z.string().min(1, "Confirme sua senha"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "As senhas não coincidem",
+    path: ["confirmPassword"],
+  });
 
-type LoginFormData = z.infer<typeof loginSchema>;
+type CadastroFormData = z.infer<typeof cadastroSchema>;
 
-export default function LoginPage() {
+export default function CadastroPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -29,25 +36,26 @@ export default function LoginPage() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
+  } = useForm<CadastroFormData>({
+    resolver: zodResolver(cadastroSchema),
   });
 
-  async function onSubmit(data: LoginFormData) {
+  async function onSubmit(data: CadastroFormData) {
     setIsLoading(true);
-    const { error } = await signIn.email({
+    const { error } = await signUp.email({
+      name: data.name,
       email: data.email,
       password: data.password,
       callbackURL: "/",
     });
 
     if (error) {
-      toast.error(error.message ?? "Credenciais inválidas. Tente novamente.");
+      toast.error(error.message ?? "Não foi possível criar a conta. Tente novamente.");
       setIsLoading(false);
       return;
     }
 
-    toast.success("Bem-vinda de volta!");
+    toast.success("Conta criada com sucesso! Bem-vinda.");
     router.push("/");
     router.refresh();
   }
@@ -75,16 +83,29 @@ export default function LoginPage() {
           </div>
 
           <div className="mb-8">
-            <h1 className="text-foreground font-serif text-2xl font-medium">Entrar na conta</h1>
+            <h1 className="text-foreground font-serif text-2xl font-medium">Criar conta</h1>
             <p className="text-muted-foreground mt-1 text-sm">
-              Não tem conta?{" "}
-              <Link href="/autenticacao/cadastro" className="text-foreground underline-offset-4 hover:underline">
-                Criar conta
+              Já tem conta?{" "}
+              <Link href="/authentication/login" className="text-foreground underline-offset-4 hover:underline">
+                Entrar
               </Link>
             </p>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="name">Nome completo</Label>
+              <Input
+                id="name"
+                type="text"
+                placeholder="Seu nome"
+                autoComplete="name"
+                {...register("name")}
+                aria-invalid={!!errors.name}
+              />
+              {errors.name && <p className="text-destructive text-xs">{errors.name.message}</p>}
+            </div>
+
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="email">E-mail</Label>
               <Input
@@ -103,17 +124,30 @@ export default function LoginPage() {
               <Input
                 id="password"
                 type="password"
-                placeholder="••••••••"
-                autoComplete="current-password"
+                placeholder="Mínimo 8 caracteres"
+                autoComplete="new-password"
                 {...register("password")}
                 aria-invalid={!!errors.password}
               />
               {errors.password && <p className="text-destructive text-xs">{errors.password.message}</p>}
             </div>
 
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="confirmPassword">Confirmar senha</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                placeholder="••••••••"
+                autoComplete="new-password"
+                {...register("confirmPassword")}
+                aria-invalid={!!errors.confirmPassword}
+              />
+              {errors.confirmPassword && <p className="text-destructive text-xs">{errors.confirmPassword.message}</p>}
+            </div>
+
             <Button type="submit" className="mt-2 w-full" disabled={isLoading}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Entrar
+              Criar conta
             </Button>
           </form>
 

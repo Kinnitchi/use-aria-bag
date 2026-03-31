@@ -9,26 +9,19 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
-import { signUp } from "@/src/lib/auth-client";
+import { signIn } from "@/src/lib/auth-client";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
 
-const cadastroSchema = z
-  .object({
-    name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
-    email: z.string().email("E-mail inválido"),
-    password: z.string().min(8, "Senha deve ter pelo menos 8 caracteres"),
-    confirmPassword: z.string().min(1, "Confirme sua senha"),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "As senhas não coincidem",
-    path: ["confirmPassword"],
-  });
+const loginSchema = z.object({
+  email: z.string().email("E-mail inválido"),
+  password: z.string().min(1, "Senha é obrigatória"),
+});
 
-type CadastroFormData = z.infer<typeof cadastroSchema>;
+type LoginFormData = z.infer<typeof loginSchema>;
 
-export default function CadastroPage() {
+export default function LoginPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -36,26 +29,25 @@ export default function CadastroPage() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<CadastroFormData>({
-    resolver: zodResolver(cadastroSchema),
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
   });
 
-  async function onSubmit(data: CadastroFormData) {
+  async function onSubmit(data: LoginFormData) {
     setIsLoading(true);
-    const { error } = await signUp.email({
-      name: data.name,
+    const { error } = await signIn.email({
       email: data.email,
       password: data.password,
       callbackURL: "/",
     });
 
     if (error) {
-      toast.error(error.message ?? "Não foi possível criar a conta. Tente novamente.");
+      toast.error(error.message ?? "Credenciais inválidas. Tente novamente.");
       setIsLoading(false);
       return;
     }
 
-    toast.success("Conta criada com sucesso! Bem-vinda.");
+    toast.success("Bem-vinda de volta!");
     router.push("/");
     router.refresh();
   }
@@ -83,29 +75,16 @@ export default function CadastroPage() {
           </div>
 
           <div className="mb-8">
-            <h1 className="text-foreground font-serif text-2xl font-medium">Criar conta</h1>
+            <h1 className="text-foreground font-serif text-2xl font-medium">Entrar na conta</h1>
             <p className="text-muted-foreground mt-1 text-sm">
-              Já tem conta?{" "}
-              <Link href="/autenticacao/login" className="text-foreground underline-offset-4 hover:underline">
-                Entrar
+              Não tem conta?{" "}
+              <Link href="/authentication/register" className="text-foreground underline-offset-4 hover:underline">
+                Criar conta
               </Link>
             </p>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="name">Nome completo</Label>
-              <Input
-                id="name"
-                type="text"
-                placeholder="Seu nome"
-                autoComplete="name"
-                {...register("name")}
-                aria-invalid={!!errors.name}
-              />
-              {errors.name && <p className="text-destructive text-xs">{errors.name.message}</p>}
-            </div>
-
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="email">E-mail</Label>
               <Input
@@ -124,30 +103,17 @@ export default function CadastroPage() {
               <Input
                 id="password"
                 type="password"
-                placeholder="Mínimo 8 caracteres"
-                autoComplete="new-password"
+                placeholder="••••••••"
+                autoComplete="current-password"
                 {...register("password")}
                 aria-invalid={!!errors.password}
               />
               {errors.password && <p className="text-destructive text-xs">{errors.password.message}</p>}
             </div>
 
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="confirmPassword">Confirmar senha</Label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                placeholder="••••••••"
-                autoComplete="new-password"
-                {...register("confirmPassword")}
-                aria-invalid={!!errors.confirmPassword}
-              />
-              {errors.confirmPassword && <p className="text-destructive text-xs">{errors.confirmPassword.message}</p>}
-            </div>
-
             <Button type="submit" className="mt-2 w-full" disabled={isLoading}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Criar conta
+              Entrar
             </Button>
           </form>
 

@@ -68,7 +68,7 @@ export function HeroCarousel({ slides }: HeroCarouselProps) {
                 asChild
                 className="bg-background text-foreground hover:bg-accent hover:text-accent-foreground rounded-sm px-8 py-6 text-sm tracking-wider uppercase"
               >
-                <a href={`/modelos/${slide.id}`}>Explorar Coleção</a>
+                <a href={`/models/${slide.id}`}>Explorar Coleção</a>
               </Button>
             </div>
           </div>
@@ -102,7 +102,7 @@ export function HeroCarousel({ slides }: HeroCarouselProps) {
             key={index}
             onClick={() => setCurrentSlide(index)}
             className={cn(
-              "transition-all duration-300",
+              "cursor-pointer transition-all duration-300",
               index === currentSlide
                 ? "bg-background h-1 w-8"
                 : "bg-background/50 hover:bg-background/80 h-2 w-2 rounded-full"

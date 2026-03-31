@@ -25,22 +25,22 @@ const navItems = [
   },
   {
     title: "Gerenciar Modelos",
-    url: "/manager/modelos",
+    url: "/manager/models",
     icon: Layers,
   },
   {
     title: "Gerenciar Produtos",
-    url: "/manager/produtos",
+    url: "/manager/products",
     icon: Package,
   },
   {
     title: "Pedidos",
-    url: "/manager/pedidos",
+    url: "/manager/orders",
     icon: ShoppingCart,
   },
   {
     title: "Clientes",
-    url: "/manager/clientes",
+    url: "/manager/customers",
     icon: Users,
   },
 ];

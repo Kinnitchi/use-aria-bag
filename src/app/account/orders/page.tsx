@@ -16,7 +16,7 @@ export default async function PedidosPage() {
   const session = await auth.api.getSession({ headers: await headers() });
 
   if (!session) {
-    redirect("/autenticacao/login");
+    redirect("/authentication/login");
   }
 
   const orders = await getOrdersByEmail(session.user.email);
