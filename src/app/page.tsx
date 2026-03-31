@@ -2,6 +2,7 @@ import { Header } from "@/src/components/layout/header";
 import { HeroCarousel } from "@/src/components/shared/hero-carousel";
 import { ModelNav, ModelShowcase } from "@/src/components/shared/model-nav";
 import { getModels, getSlides } from "@/src/db/queries";
+import { NewsletterForm } from "./_components/newsletter-form";
 
 export default async function Home() {
   const [models, slides] = await Promise.all([getModels(), getSlides()]);
@@ -23,19 +24,7 @@ export default async function Home() {
           <p className="text-muted-foreground mb-8">
             Receba em primeira mão nossas novas coleções, promoções exclusivas e dicas de estilo.
           </p>
-          <form className="mx-auto flex max-w-md flex-col gap-3 sm:flex-row">
-            <input
-              type="email"
-              placeholder="Seu e-mail"
-              className="bg-background border-border focus:ring-accent/50 text-foreground placeholder:text-muted-foreground flex-1 rounded-lg border px-4 py-3 focus:ring-2 focus:outline-none"
-            />
-            <button
-              type="submit"
-              className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-6 py-3 text-sm font-medium tracking-wide uppercase transition-colors"
-            >
-              Inscrever
-            </button>
-          </form>
+          <NewsletterForm />
         </div>
       </section>
 
