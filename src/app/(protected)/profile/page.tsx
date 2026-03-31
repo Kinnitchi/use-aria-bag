@@ -18,7 +18,6 @@ export const metadata = {
 export default async function ProfilePage() {
   const session = await auth.api.getSession({ headers: await headers() });
 
-  console.log("session:", session);
   if (!session) {
     redirect("/authentication/login");
   }

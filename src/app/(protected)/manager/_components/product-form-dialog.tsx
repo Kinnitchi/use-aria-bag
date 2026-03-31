@@ -30,20 +30,29 @@ export function ProductFormDialog({ modelId, modelName, product, open, onClose }
   const [price, setPrice] = useState("");
   const [color, setColor] = useState("");
 
-  const { execute: executeSave, isPending: isSaving } = useAction(isEditing ? updateProductAction : addProductAction, {
+  const { execute: executeAdd, isPending: isAdding } = useAction(addProductAction, {
     onSuccess: ({ data }) => {
       const parsedPrice = parseFloat(price.replace(",", "."));
-      if (isEditing && product) {
+      const newId = (data as { productId: string } | undefined)?.productId ?? crypto.randomUUID();
+      addProduct(modelId, { id: newId, name: name.trim(), price: parsedPrice, color: color.trim() });
+      toast.success(`Produto "${name.trim()}" cadastrado em ${modelName}.`);
+      onClose();
+    },
+    onError: ({ error }) => {
+      toast.error(error.serverError ?? "Erro ao salvar produto. Tente novamente.");
+    },
+  });
+
+  const { execute: executeUpdate, isPending: isUpdating } = useAction(updateProductAction, {
+    onSuccess: () => {
+      const parsedPrice = parseFloat(price.replace(",", "."));
+      if (product) {
         updateProduct(modelId, product.id, {
           name: name.trim(),
           price: parsedPrice,
           color: color.trim(),
         });
         toast.success(`Produto "${name.trim()}" atualizado.`);
-      } else {
-        const newId = (data as { productId: string } | undefined)?.productId ?? crypto.randomUUID();
-        addProduct(modelId, { id: newId, name: name.trim(), price: parsedPrice, color: color.trim() });
-        toast.success(`Produto "${name.trim()}" cadastrado em ${modelName}.`);
       }
       onClose();
     },
@@ -92,9 +101,9 @@ export function ProductFormDialog({ modelId, modelName, product, open, onClose }
     }
 
     if (isEditing && product) {
-      executeSave({ productId: product.id, name: name.trim(), price: parsedPrice, colorName: color.trim() });
+      executeUpdate({ productId: product.id, name: name.trim(), price: parsedPrice, colorName: color.trim() });
     } else {
-      executeSave({ modelSlug: modelId, name: name.trim(), price: parsedPrice, colorName: color.trim() });
+      executeAdd({ modelSlug: modelId, name: name.trim(), price: parsedPrice, colorName: color.trim() });
     }
   }
 
@@ -103,7 +112,7 @@ export function ProductFormDialog({ modelId, modelName, product, open, onClose }
     executeDelete({ productId: product.id });
   }
 
-  const isPending = isSaving || isDeleting;
+  const isPending = isAdding || isUpdating || isDeleting;
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
@@ -164,7 +173,7 @@ export function ProductFormDialog({ modelId, modelName, product, open, onClose }
               Cancelar
             </Button>
             <Button onClick={handleSave} disabled={isPending}>
-              {isSaving ? "Salvando..." : isEditing ? "Salvar" : "Cadastrar"}
+              {isPending ? "Salvando..." : isEditing ? "Salvar" : "Cadastrar"}
             </Button>
           </div>
         </DialogFooter>
