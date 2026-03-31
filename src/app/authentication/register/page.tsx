@@ -50,7 +50,9 @@ export default function CadastroPage() {
     });
 
     if (error) {
-      toast.error(error.message ?? "Não foi possível criar a conta. Tente novamente.");
+      // Mensagem genérica intencional — "User already exists" do better-auth
+      // vazaria enumeração de contas cadastradas via endpoint de cadastro.
+      toast.error("Não foi possível criar a conta. Verifique os dados e tente novamente.");
       setIsLoading(false);
       return;
     }

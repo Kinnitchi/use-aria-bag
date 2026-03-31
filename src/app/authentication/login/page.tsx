@@ -42,7 +42,10 @@ export default function LoginPage() {
     });
 
     if (error) {
-      toast.error(error.message ?? "Credenciais inválidas. Tente novamente.");
+      // Mensagem genérica intencional — nunca usar error.message diretamente.
+      // Diferenciar "usuário não encontrado" de "senha incorreta" permite
+      // enumeração de contas cadastradas (VULN-05).
+      toast.error("E-mail ou senha incorretos. Tente novamente.");
       setIsLoading(false);
       return;
     }
