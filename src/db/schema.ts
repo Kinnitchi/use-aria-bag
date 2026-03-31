@@ -211,6 +211,15 @@ export const authUserTable = pgTable("auth_user", {
   emailVerified: boolean("email_verified").notNull().default(false),
   image: text("image"),
   role: userRoleEnum("role").notNull().default("customer"),
+  // ── Shipping address ───────────────────────────────────────────────────────
+  phone: text("phone"),
+  addressZipCode: text("address_zip_code"),
+  addressStreet: text("address_street"),
+  addressNumber: text("address_number"),
+  addressComplement: text("address_complement"),
+  addressNeighborhood: text("address_neighborhood"),
+  addressCity: text("address_city"),
+  addressState: text("address_state"),
   createdAt: timestamp("created_at").notNull(),
   updatedAt: timestamp("updated_at").notNull(),
 });

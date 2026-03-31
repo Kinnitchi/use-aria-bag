@@ -148,6 +148,14 @@ export function Header() {
                         </Link>
                       )}
                       <Link
+                        href="/profile"
+                        className="text-foreground hover:bg-muted hover:text-ring flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors"
+                      >
+                        <User className="text-muted-foreground h-4 w-4 shrink-0" />
+                        Meu Perfil
+                      </Link>
+
+                      <Link
                         href="/conta/pedidos"
                         className="text-foreground hover:bg-muted hover:text-ring flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors"
                       >
@@ -222,6 +230,18 @@ export function Header() {
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuGroup>
+                      <DropdownMenuItem asChild>
+                        <Link href="/profile" className="flex cursor-pointer items-center gap-2">
+                          <User className="focus:text-accent-foreground h-4 w-4" />
+                          Meu Perfil
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/conta/pedidos" className="flex cursor-pointer items-center gap-2">
+                          <Package className="focus:text-accent-foreground h-4 w-4" />
+                          Meus Pedidos
+                        </Link>
+                      </DropdownMenuItem>
                       {isAdmin && (
                         <DropdownMenuItem asChild>
                           <Link href="/manager" className="flex cursor-pointer items-center gap-2">
@@ -230,12 +250,6 @@ export function Header() {
                           </Link>
                         </DropdownMenuItem>
                       )}
-                      <DropdownMenuItem asChild>
-                        <Link href="/conta/pedidos" className="flex cursor-pointer items-center gap-2">
-                          <Package className="focus:text-accent-foreground h-4 w-4" />
-                          Meus Pedidos
-                        </Link>
-                      </DropdownMenuItem>
                     </DropdownMenuGroup>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
