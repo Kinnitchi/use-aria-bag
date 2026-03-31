@@ -15,6 +15,13 @@
       "when": 1774667353565,
       "tag": "0001_calm_kid_colt",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1774901540109,
+      "tag": "0002_tidy_quasar",
+      "breakpoints": true
     }
   ]
 }
