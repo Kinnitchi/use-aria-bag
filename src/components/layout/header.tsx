@@ -254,7 +254,7 @@ export function Header() {
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       onClick={handleLogout}
-                      className="text-destructive focus:text-destructive flex cursor-pointer items-center gap-2"
+                      className="text-destructive focus:text-accent-foreground flex cursor-pointer items-center gap-2"
                     >
                       <LogOut className="focus:text-accent-foreground h-4 w-4" />
                       Sair

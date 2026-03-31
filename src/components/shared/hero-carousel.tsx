@@ -41,7 +41,7 @@ export function HeroCarousel({ slides }: HeroCarouselProps) {
           key={slide.index}
           className={cn(
             "absolute inset-0 transition-opacity duration-1000",
-            index === currentSlide ? "opacity-100" : "opacity-0"
+            index === currentSlide ? "opacity-100" : "pointer-events-none opacity-0"
           )}
         >
           <Image src={slide.image} alt={slide.title} fill className="object-cover" priority={index === 0} />
@@ -66,7 +66,7 @@ export function HeroCarousel({ slides }: HeroCarouselProps) {
               <Button
                 size="lg"
                 asChild
-                className="bg-background text-foreground hover:bg-background/90 rounded-sm px-8 py-6 text-sm tracking-wider uppercase"
+                className="bg-background text-foreground hover:bg-accent hover:text-accent-foreground rounded-sm px-8 py-6 text-sm tracking-wider uppercase"
               >
                 <a href={`/modelos/${slide.id}`}>Explorar Coleção</a>
               </Button>
@@ -80,7 +80,7 @@ export function HeroCarousel({ slides }: HeroCarouselProps) {
         variant="ghost"
         size="icon"
         onClick={prevSlide}
-        className="text-background hover:bg-background/20 absolute top-1/2 left-4 h-12 w-12 -translate-y-1/2 rounded-full md:left-8"
+        className="text-background hover:bg-accent hover:text-accent-foreground absolute top-1/2 left-4 h-12 w-12 -translate-y-1/2 rounded-full md:left-8"
       >
         <ChevronLeft className="h-6 w-6" />
         <span className="sr-only">Slide anterior</span>
@@ -89,7 +89,7 @@ export function HeroCarousel({ slides }: HeroCarouselProps) {
         variant="ghost"
         size="icon"
         onClick={nextSlide}
-        className="text-background hover:bg-background/20 absolute top-1/2 right-4 h-12 w-12 -translate-y-1/2 rounded-full md:right-8"
+        className="text-background hover:bg-accent hover:text-accent-foreground absolute top-1/2 right-4 h-12 w-12 -translate-y-1/2 rounded-full md:right-8"
       >
         <ChevronRight className="h-6 w-6" />
         <span className="sr-only">Próximo slide</span>
