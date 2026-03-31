@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowLeft, ShoppingBag } from "lucide-react";
 
 import { auth } from "@/src/lib/auth";
-import { getOrdersByEmail } from "@/src/db/queries";
+import { getOrdersByUser } from "@/src/db/queries";
 import { Header } from "@/src/components/layout/header";
 import { OrderCard } from "./_components/order-card";
 
@@ -19,7 +19,8 @@ export default async function PedidosPage() {
     redirect("/authentication/login");
   }
 
-  const orders = await getOrdersByEmail(session.user.email);
+  // Usar userId + email ambos da sessão server-side — nunca de input do usuário
+  const orders = await getOrdersByUser(session.user.id, session.user.email);
 
   return (
     <main className="bg-background min-h-screen">

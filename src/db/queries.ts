@@ -2,7 +2,7 @@
  * Data access layer — fetches DB data shaped to match the app's frontend types.
  */
 
-import { eq } from "drizzle-orm";
+import { eq, or } from "drizzle-orm";
 import { db } from "./index";
 import { modelsTable, ordersTable, productsTable, slidesTable } from "./schema";
 import type { Model, Product, Slide, SuggestedProduct } from "../types";
@@ -140,9 +140,21 @@ export async function getSlides(): Promise<Slide[]> {
 
 // ─── Orders ───────────────────────────────────────────────────────────────────
 
-export async function getOrdersByEmail(email: string) {
+/**
+ * Busca pedidos do usuário autenticado.
+ *
+ * SEGURANÇA — Correção de IDOR (VULN-07):
+ * - Usa OR entre userId (vínculo de pedidos autenticados) e guestEmail
+ *   (pedidos feitos como guest com o mesmo e-mail).
+ * - Ambos os valores vêm EXCLUSIVAMENTE da sessão server-side — nunca de
+ *   input do usuário. Isso impede que um atacante enumere pedidos de outro
+ *   usuário manipulando parâmetros da requisição.
+ * - userId é o identificador primário; e-mail é secundário apenas para
+ *   cobrir pedidos guest associados à conta.
+ */
+export async function getOrdersByUser(userId: string, email: string) {
   return db.query.ordersTable.findMany({
-    where: eq(ordersTable.guestEmail, email),
+    where: or(eq(ordersTable.userId, userId), eq(ordersTable.guestEmail, email)),
     with: {
       items: {
         with: {
