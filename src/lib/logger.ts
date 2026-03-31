@@ -17,7 +17,9 @@ export type SecurityEvent =
   | "ADMIN_PRODUCT_CREATE" // Admin criou um produto
   | "ADMIN_PRODUCT_UPDATE" // Admin atualizou produto/preço
   | "ADMIN_PRODUCT_DELETE" // Admin removeu um produto
-  | "RATE_LIMIT_BLOCKED"; // IP bloqueado por rate limiting
+  | "RATE_LIMIT_BLOCKED" // IP bloqueado por rate limiting
+  | "ORDER_CREATED" // Pedido criado (com valor e userId)
+  | "ORDER_STOCK_ERROR"; // Tentativa de pedido com estoque insuficiente
 
 type LogLevel = "info" | "warn" | "error";
 

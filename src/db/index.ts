@@ -4,12 +4,17 @@ import { drizzle } from "drizzle-orm/node-postgres";
 
 import * as schema from "./schema";
 
+// Falhar rápido se a variável de ambiente crítica não estiver definida.
+if (!process.env.DATABASE_URL) {
+  throw new Error("[SECURITY] DATABASE_URL não está definido. Defina a variável de ambiente antes de iniciar.");
+}
+
 /**
  * Conexão de leitura+escrita — usar para mutações (insert, update, delete).
  * Credencial: aria_app (has DML but not DDL)
  * Env var: DATABASE_URL
  */
-export const db = drizzle(process.env.DATABASE_URL!, { schema });
+export const db = drizzle(process.env.DATABASE_URL, { schema });
 
 /**
  * Conexão somente-leitura — usar para queries públicas de leitura.
@@ -22,4 +27,4 @@ export const db = drizzle(process.env.DATABASE_URL!, { schema });
  *   GRANT USAGE ON SCHEMA public TO aria_readonly;
  *   GRANT SELECT ON ALL TABLES IN SCHEMA public TO aria_readonly;
  */
-export const dbReadOnly = drizzle(process.env.DATABASE_READONLY_URL ?? process.env.DATABASE_URL!, { schema });
+export const dbReadOnly = drizzle(process.env.DATABASE_READONLY_URL ?? process.env.DATABASE_URL, { schema });

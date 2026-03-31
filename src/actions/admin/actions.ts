@@ -23,8 +23,24 @@ export const getAdminOrdersAction = adminActionClient.schema(z.object({})).actio
 });
 
 export const getAdminCustomersAction = adminActionClient.schema(z.object({})).action(async () => {
+  // SEGURANÇA: selecionar apenas colunas necessárias para evitar
+  // exposição desnecessária de dados do usuário (princípio do menor privilégio).
   const customers = await db.query.authUserTable.findMany({
     orderBy: [desc(authUserTable.createdAt)],
+    columns: {
+      id: true,
+      name: true,
+      email: true,
+      emailVerified: true,
+      role: true,
+      image: true,
+      phone: true,
+      addressCity: true,
+      addressState: true,
+      createdAt: true,
+      updatedAt: true,
+      // Campos de endereço completo omitidos — adicionar conforme necessidade real
+    },
   });
   return { customers };
 });

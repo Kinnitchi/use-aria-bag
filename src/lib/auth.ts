@@ -3,6 +3,22 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "@/src/db";
 import { authUserTable, authSessionTable, authAccountTable, authVerificationTable } from "@/src/db/schema";
 
+// ── Validação de segredos obrigatórios na inicialização ───────────────────────
+// Falhar rápido em vez de iniciar com segredo indefinido/fraco.
+if (!process.env.BETTER_AUTH_SECRET) {
+  throw new Error(
+    "[SECURITY] BETTER_AUTH_SECRET não está definido. " +
+      "Defina um segredo forte de pelo menos 32 caracteres em .env antes de iniciar."
+  );
+}
+
+if (process.env.BETTER_AUTH_SECRET.length < 32) {
+  throw new Error(
+    "[SECURITY] BETTER_AUTH_SECRET é muito curto. " +
+      "Use pelo menos 32 caracteres aleatórios (ex: openssl rand -hex 32)."
+  );
+}
+
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg",
@@ -46,7 +62,10 @@ export const auth = betterAuth({
     expiresIn: 60 * 60 * 24 * 2,
     updateAge: 60 * 60 * 24,
   },
-  secret: process.env.BETTER_AUTH_SECRET!,
+  secret: process.env.BETTER_AUTH_SECRET,
+  // AVISO: em produção, BETTER_AUTH_URL deve ser https:// para que os cookies
+  // recebam a flag Secure automaticamente. Com http://, cookies podem ser
+  // transmitidos em texto claro e interceptados.
   baseURL: process.env.BETTER_AUTH_URL ?? "http://localhost:3000",
 });
 

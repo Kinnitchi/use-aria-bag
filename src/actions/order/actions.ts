@@ -7,6 +7,7 @@ import { actionClient } from "@/src/lib/safe-action";
 import { auth } from "@/src/lib/auth";
 import { db } from "@/src/db";
 import { orderItemsTable, ordersTable, productsTable } from "@/src/db/schema";
+import { logSecurityEvent } from "@/src/lib/logger";
 import { createOrderSchema } from "./schema";
 
 /**
@@ -27,8 +28,10 @@ export const createOrderAction = actionClient.schema(createOrderSchema).action(a
   const { items, guestEmail, guestName, shippingAddress } = parsedInput;
 
   // Identificar usuário autenticado, se houver
-  const session = await auth.api.getSession({ headers: await headers() });
+  const hdrs = await headers();
+  const session = await auth.api.getSession({ headers: hdrs });
   const userId = session?.user.id ?? null;
+  const ip = hdrs.get("x-forwarded-for")?.split(",")[0]?.trim() ?? hdrs.get("x-real-ip") ?? "unknown";
 
   // Guest checkout requer e-mail
   if (!userId && !guestEmail) {
@@ -59,6 +62,11 @@ export const createOrderAction = actionClient.schema(createOrderSchema).action(a
     }
 
     if (dbProduct.stock < cartItem.quantity) {
+      logSecurityEvent("ORDER_STOCK_ERROR", "warn", {
+        userId: userId ?? "guest",
+        ip,
+        details: { productId: cartItem.productId, requested: cartItem.quantity, available: dbProduct.stock },
+      });
       throw new Error(`Estoque insuficiente para "${dbProduct.name}". Disponível: ${dbProduct.stock}.`);
     }
   }
@@ -96,6 +104,12 @@ export const createOrderAction = actionClient.schema(createOrderSchema).action(a
     );
 
     return newOrder;
+  });
+
+  logSecurityEvent("ORDER_CREATED", "info", {
+    userId: userId ?? "guest",
+    ip,
+    details: { orderId: order.id, totalInCents, itemCount: items.length },
   });
 
   return { orderId: order.id, totalInCents };

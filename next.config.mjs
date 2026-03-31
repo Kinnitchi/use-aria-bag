@@ -2,9 +2,11 @@
 
 const securityHeaders = [
   // Impede ataques de clickjacking via iframe
+  // DEVE ser DENY para ser consistente com frame-ancestors 'none' no CSP.
+  // SAMEORIGIN contradiz frame-ancestors 'none' — browsers modernos preferem CSP.
   {
     key: "X-Frame-Options",
-    value: "SAMEORIGIN",
+    value: "DENY",
   },
   // Impede MIME sniffing — o browser deve respeitar o Content-Type declarado
   {
@@ -38,7 +40,10 @@ const securityHeaders = [
       // Padrão restritivo: apenas same-origin
       "default-src 'self'",
       // Scripts: self + inline necessário para Next.js + Vercel Analytics
-      "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://va.vercel-scripts.com",
+      // AVISO: 'unsafe-eval' foi REMOVIDO — Next.js App Router em produção não requer.
+      // Se houver erros de hydration após remover, investigar quais libs usam eval().
+      // Implementar nonces se necessário: https://nextjs.org/docs/app/building-your-application/configuring/content-security-policy
+      "script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com",
       // Estilos: self + inline necessário para Tailwind CSS em runtime
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       // Fontes: Google Fonts CDN

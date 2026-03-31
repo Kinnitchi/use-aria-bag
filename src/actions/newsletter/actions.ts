@@ -19,11 +19,12 @@ export const subscribeNewsletterAction = actionClient.schema(newsletterSchema).a
   const hdrs = await headers();
   const ip = hdrs.get("x-forwarded-for")?.split(",")[0]?.trim() ?? hdrs.get("x-real-ip") ?? "unknown";
 
-  // Log estruturado — substituir por chamada ao serviço de e-mail em produção
+  // Log estruturado — NÃO logar o e-mail (PII) em produção.
+  // Substituir por chamada ao serviço de e-mail (ex: Resend, Mailchimp) em produção.
   console.log(
     JSON.stringify({
       event: "NEWSLETTER_SUBSCRIBE",
-      email: parsedInput.email,
+      // email OMITIDO — expor PII em logs viola LGPD e boas práticas de segurança
       ip,
       timestamp: new Date().toISOString(),
     })

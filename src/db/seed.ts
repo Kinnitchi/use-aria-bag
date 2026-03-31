@@ -22,7 +22,23 @@ import { models, products, slides } from "../../data/index";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
+/**
+ * ⚠️  AVISO DE SEGURANÇA — NÃO usar SHA-256 para hashing de senhas em produção.
+ *
+ * SHA-256 é um hash criptográfico de propósito geral, rápido por design.
+ * Para senhas, use algoritmos lentos e com salt: bcrypt, argon2id ou scrypt.
+ *
+ * Este seed destina-se APENAS a ambientes de desenvolvimento local.
+ * O sistema de autenticação real (better-auth) usa scrypt internamente
+ * e armazena senhas em authUserTable, não em usersTable.
+ *
+ * NUNCA execute este seed em ambiente de produção.
+ * Em produção, crie o admin via painel ou script dedicado com better-auth.
+ *
+ * TODO: substituir por bcrypt ou remover usersTable do seed se não utilizada para auth.
+ */
 function hashPassword(plain: string) {
+  // INSEGURO — apenas para seed de desenvolvimento
   return createHash("sha256").update(plain).digest("hex");
 }
 
